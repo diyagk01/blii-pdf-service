@@ -121,10 +121,12 @@ def extract_pdf():
             response_data = {
                 'success': True,
                 'content': text,
+                'title': file_path.split('/')[-1].replace('.pdf', '') if '/' in file_path else 'PDF Document',
+                'method': result.get('method', 'unknown'),
+                'extraction_method': result.get('method', 'unknown'),
                 'word_count': word_count,
                 'char_count': char_count,
                 'page_count': result.get('page_count', 0),
-                'extraction_method': result.get('method', 'unknown'),
                 'metadata': result.get('metadata', {}),
                 'summary': f"Extracted {word_count} words from {result.get('page_count', 0)} pages"
             }
