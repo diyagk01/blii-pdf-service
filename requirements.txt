@@ -4,20 +4,7 @@ flask-cors==4.0.0
 requests==2.31.0
 gunicorn==21.2.0
 
-# PDF Processing Libraries (following Ploomber recommendations)
+# Essential PDF Processing Libraries (cloud-friendly)
 PyPDF2==3.0.1
-pytesseract==0.3.10
-pdf2image==1.16.3
-Pillow==10.0.1
 PyMuPDF==1.23.8
-
-# Docling as fallback (optional)
-docling==1.4.0
-pypdfium2==4.18.0
-numpy==1.24.3
-opencv-python==4.8.1.78
-
-# System dependencies needed for OCR:
-# Ubuntu/Debian: apt-get install tesseract-ocr poppler-utils
-# macOS: brew install tesseract poppler
-# Windows: Download Tesseract from https://github.com/UB-Mannheim/tesseract/wiki
+Pillow==10.0.1
