@@ -76,10 +76,11 @@ def extract_pdf():
     """Extract text from PDF file"""
     try:
         data = request.get_json()
-        if not data or 'file_path' not in data:
-            return jsonify({'error': 'file_path is required'}), 400
         
-        file_path = data['file_path']
+        # Accept both 'file_path' and 'pdf_url' for compatibility
+        file_path = data.get('file_path') or data.get('pdf_url')
+        if not file_path:
+            return jsonify({'error': 'file_path or pdf_url is required'}), 400
         logger.info(f"🔄 Processing PDF: {file_path}")
         
         # Handle both local files and URLs
