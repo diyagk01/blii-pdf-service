@@ -1,10 +1,13 @@
 # Core Flask dependencies
 flask==2.3.3
 flask-cors==4.0.0
-requests==2.31.0
+requests>=2.32.3
 gunicorn==21.2.0
 
 # Essential PDF Processing Libraries (cloud-friendly)
 PyPDF2==3.0.1
 PyMuPDF==1.23.8
 Pillow==10.0.1
+
+# Docling for advanced PDF processing
+docling==1.8.0

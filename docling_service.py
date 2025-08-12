@@ -42,6 +42,70 @@ def health_check():
         'docling_available': converter is not None
     })
 
+@app.route('/upload', methods=['POST'])
+def upload_and_extract():
+    """Upload and extract content from PDF file using Docling"""
+    try:
+        # Check if file was uploaded
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file uploaded'}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+        
+        # Check file extension
+        if not file.filename.lower().endswith('.pdf'):
+            return jsonify({'error': 'Only PDF files are supported'}), 400
+        
+        logger.info(f"🔄 Processing uploaded PDF: {file.filename}")
+        
+        # Save uploaded file temporarily
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
+        file.save(temp_file.name)
+        
+        try:
+            # Use Docling's conversion on the temp file
+            result = converter.convert(temp_file.name)
+            
+            # Export to markdown - this is the main content
+            markdown_content = result.document.export_to_markdown()
+            
+            # Extract title from filename if not available from document
+            doc_title = file.filename.replace('.pdf', '').replace('_', ' ').replace('-', ' ').title()
+            
+            # Calculate basic statistics
+            word_count = len(markdown_content.split())
+            
+            logger.info(f"✅ Successfully extracted {word_count} words from uploaded {file.filename}")
+            
+            return jsonify({
+                'success': True,
+                'title': doc_title,
+                'content': markdown_content,
+                'metadata': {
+                    'filename': file.filename,
+                    'word_count': word_count,
+                    'character_count': len(markdown_content),
+                    'extraction_method': 'docling_upload',
+                },
+                'extraction_confidence': 0.95
+            })
+            
+        finally:
+            # Clean up temp file
+            try:
+                os.unlink(temp_file.name)
+            except:
+                pass
+                
+    except Exception as e:
+        logger.error(f"❌ Upload extraction error: {e}")
+        return jsonify({
+            'error': f'PDF upload extraction failed: {str(e)}',
+            'success': False
+        }), 500
+
 @app.route('/extract', methods=['POST'])
 def extract_pdf_content():
     """Extract content from PDF using simple Docling approach"""

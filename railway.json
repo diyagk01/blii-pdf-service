@@ -7,5 +7,6 @@
     "healthcheckPath": "/health",
     "healthcheckTimeout": 100,
     "restartPolicyType": "ON_FAILURE"
-  }
+  },
+  "version": "docling-2024-01"
 }
