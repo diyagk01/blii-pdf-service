@@ -11,3 +11,4 @@ Pillow==10.0.1
 
 # Docling for advanced PDF processing
 docling==1.8.0
+deepsearch-toolkit
