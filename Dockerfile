@@ -16,6 +16,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY docling_service.py .
+COPY start.sh .
+
+# Make start script executable
+RUN chmod +x start.sh
 
 # Create non-root user for security
 RUN adduser --disabled-password --gecos '' appuser && chown -R appuser /app
@@ -31,5 +35,5 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
 # Set environment variables for memory optimization
 ENV PORT=8080 WEB_CONCURRENCY=1
 
-# Start the Docling service with single worker to avoid OOM
-CMD gunicorn docling_service:app --workers 1 --bind 0.0.0.0:${PORT} --timeout 120 --max-requests 100 --max-requests-jitter 10
+# Start the Docling service using the shell script
+CMD ["./start.sh"]
