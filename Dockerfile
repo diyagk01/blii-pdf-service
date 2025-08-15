@@ -32,4 +32,4 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
 ENV PORT=8080 WEB_CONCURRENCY=1
 
 # Start the Docling service with single worker to avoid OOM
-CMD ["gunicorn", "docling_service:app", "--workers", "1", "--bind", "0.0.0.0:${PORT}", "--timeout", "120", "--max-requests", "100", "--max-requests-jitter", "10"]
+CMD gunicorn docling_service:app --workers 1 --bind 0.0.0.0:${PORT} --timeout 120 --max-requests 100 --max-requests-jitter 10
