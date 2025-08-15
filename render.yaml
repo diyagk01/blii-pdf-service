@@ -1,15 +1,13 @@
 services:
   - type: web
     name: blii-pdf-extraction
-    runtime: docker
-    dockerfilePath: ./Dockerfile
-    healthCheckPath: /health
+    env: docker
     plan: starter
-    env: python3
-    buildCommand: echo "Using Docker build"
-    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 docling_service:app
+    healthCheckPath: /healthz
     envVars:
+      - key: WEB_CONCURRENCY
+        value: "1"
       - key: PORT
-        value: 8080
-      - key: PYTHONUNBUFFERED
-        value: 1
+        value: "8080"
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn docling_service:app --workers 1 --bind 0.0.0.0:$PORT --timeout 120

@@ -30,6 +30,14 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 CORS(app)  # Enable CORS for React Native
 
+# Set memory optimization for PyTorch if available
+try:
+    import torch
+    torch.set_grad_enabled(False)  # Disable gradients for inference
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:64"
+except ImportError:
+    pass
+
 # Lazy loading for Docling converter to reduce memory usage
 _converter = None
 
@@ -61,6 +69,11 @@ def health_check():
         'docling_available': True,
         'memory': memory_info
     })
+
+@app.route('/healthz', methods=['GET'])
+def healthz():
+    """Simple health check for Render"""
+    return jsonify({"ok": True})
 
 @app.route('/upload', methods=['POST'])
 def upload_and_extract():

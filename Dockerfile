@@ -28,5 +28,8 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
   CMD python -c "import requests; requests.get('http://localhost:8080/health')"
 
-# Start the Docling service with memory optimizations
-CMD ["gunicorn", "--bind", "0.0.0.0:${PORT:-8080}", "--workers", "1", "--timeout", "300", "--max-requests", "100", "--max-requests-jitter", "10", "--preload", "docling_service:app"]
+# Set environment variables for memory optimization
+ENV PORT=8080 WEB_CONCURRENCY=1
+
+# Start the Docling service with single worker to avoid OOM
+CMD ["gunicorn", "docling_service:app", "--workers", "1", "--bind", "0.0.0.0:${PORT}", "--timeout", "120", "--max-requests", "100", "--max-requests-jitter", "10"]
