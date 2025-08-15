@@ -8,6 +8,7 @@ import os
 import sys
 import logging
 import tempfile
+import gc
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
@@ -29,17 +30,36 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 CORS(app)  # Enable CORS for React Native
 
-# Initialize simple Docling converter
-converter = DocumentConverter()
-logger.info("✅ Docling DocumentConverter initialized")
+# Lazy loading for Docling converter to reduce memory usage
+_converter = None
+
+def get_converter():
+    """Get or create Docling converter singleton"""
+    global _converter
+    if _converter is None:
+        logger.info("🔄 Initializing Docling DocumentConverter...")
+        _converter = DocumentConverter()
+        logger.info("✅ Docling DocumentConverter initialized")
+    return _converter
 
 @app.route('/health', methods=['GET'])
 def health_check():
     """Health check endpoint"""
+    try:
+        import psutil
+        memory_info = {
+            'memory_percent': psutil.virtual_memory().percent,
+            'memory_used_mb': psutil.virtual_memory().used // (1024 * 1024),
+            'memory_available_mb': psutil.virtual_memory().available // (1024 * 1024)
+        }
+    except ImportError:
+        memory_info = {'error': 'psutil not available'}
+    
     return jsonify({
         'status': 'healthy',
         'service': 'docling_extraction_service',
-        'docling_available': converter is not None
+        'docling_available': True,
+        'memory': memory_info
     })
 
 @app.route('/upload', methods=['POST'])
@@ -66,6 +86,7 @@ def upload_and_extract():
         
         try:
             # Use Docling's conversion on the temp file
+            converter = get_converter()
             result = converter.convert(temp_file.name)
             
             # Export to markdown - this is the main content
@@ -78,6 +99,9 @@ def upload_and_extract():
             word_count = len(markdown_content.split())
             
             logger.info(f"✅ Successfully extracted {word_count} words from uploaded {file.filename}")
+            
+            # Force garbage collection to free memory
+            gc.collect()
             
             return jsonify({
                 'success': True,
@@ -132,6 +156,7 @@ def extract_pdf_content():
             }), 400
         
         # Use Docling's conversion
+        converter = get_converter()
         result = converter.convert(processed_url)
         
         # Export to markdown - this is the main content
@@ -144,6 +169,9 @@ def extract_pdf_content():
         word_count = len(markdown_content.split())
         
         logger.info(f"✅ Successfully extracted {word_count} words from {filename}")
+        
+        # Force garbage collection to free memory
+        gc.collect()
         
         return jsonify({
             'success': True,

@@ -1,4 +1,4 @@
-# Core Flask dependencies
+# Core Flask dependencies (minimal)
 flask==2.3.3
 flask-cors==4.0.0
 requests>=2.32.3
@@ -9,6 +9,9 @@ PyPDF2==3.0.1
 PyMuPDF==1.23.8
 Pillow==10.0.1
 
-# Docling for advanced PDF processing
+# Docling for advanced PDF processing (lazy loaded)
 docling==1.8.0
+
+# Memory optimization
+psutil==5.9.8
 deepsearch-toolkit
