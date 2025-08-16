@@ -9,15 +9,19 @@ if ! command -v python3 &> /dev/null; then
     exit 1
 fi
 
-# Check if pip is available
-if ! command -v pip3 &> /dev/null; then
-    echo "❌ pip3 is required but not installed."
-    exit 1
+# Check if virtual environment exists, create if not
+if [ ! -d "venv" ]; then
+    echo "📦 Creating virtual environment..."
+    python3 -m venv venv
 fi
 
-# Install requirements
+# Activate virtual environment
+echo "🔧 Activating virtual environment..."
+source venv/bin/activate
+
+# Install requirements in virtual environment
 echo "📦 Installing requirements..."
-pip3 install -r requirements.txt
+python3 -m pip install -r requirements.txt
 
 # Start the service
 echo "🔄 Starting Docling service on port 8080..."

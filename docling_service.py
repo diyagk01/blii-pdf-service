@@ -287,7 +287,7 @@ if __name__ == '__main__':
     debug_mode = os.environ.get('DEBUG', 'False').lower() == 'true'
     
     logger.info(f"🚀 Starting Docling PDF Extraction Service on port {port}")
-    logger.info(f"� Debug mode: {debug_mode}")
-    logger.info(f"✅ Docling converter ready: {converter is not None}")
+    logger.info(f"🔧 Debug mode: {debug_mode}")
+    logger.info(f"✅ Docling converter ready: {_converter is not None}")
     
     app.run(host='0.0.0.0', port=port, debug=debug_mode)
